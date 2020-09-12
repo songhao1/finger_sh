@@ -630,6 +630,8 @@ int MidFilter(unsigned char *ucImg, unsigned char *ucDstImg, int iWidth, int iHe
 }
 
 
+/*本项目使用图像文件来保存所有中间结果,
+用于在系统界面上直观展示与查看各步操作结果的处理效果.*/
 //将位图数据写入BMP图像文件
 //dstFileName(目标文件名),pusImgData(待保存数据数组)
 int WriteBMPImgFile(char *dstFileName, unsigned char **pusImgData)
@@ -696,7 +698,7 @@ int SaveDataToImageFile(char *srcFile, char *dstFile, unsigned char *data)
 	return 0;
 }
 
-//保存数据到图像文件
+//保存数据到BMP图像文件
 //srcFile(源文件名)，dstFile(目标文件名),data(待保存数据数组),scale(转换比例)
 int SaveDataToImageFile(char *srcFile, char *dstFile, float *data, float scale)
 {
@@ -762,7 +764,7 @@ int Step2_MidFilter(char *info)
 }
 
 
-//直方图均衡化
+//直方图均衡化//https://blog.csdn.net/qq_15971883/article/details/88699218
 //ucImg(源图数据),ucNormImg(结果图数据),iWidth(图像宽度),iHeight(图像高度)
 int HistoNormalize(unsigned char *ucImg, unsigned char *ucNormImg, int iWidth, int iHeight)
 {
@@ -784,6 +786,7 @@ int HistoNormalize(unsigned char *ucImg, unsigned char *ucNormImg, int iWidth, i
 		dMean += i * Histogram[i];
 	}
 	dMean = int(dMean / (iWidth*iHeight));
+
 	double dSigma = 0;
 	for (int i = 0; i < 255; i++)
 	{
@@ -853,6 +856,7 @@ int Step3_Normalize(char *info)
 	sprintf(info, "完成直方图均衡化.");
 	return 0;
 }
+
 
 //指纹脊线方向计算
 //ucImg(图像数据),fDirc(脊线方向数据),iWidth(图像宽度),iHeight(图像高度)
@@ -2784,7 +2788,7 @@ void CFingerDlg::OnBnClickedBtnDatabase()
 }
 
 
-//特征提取
+//按钮:特征提取
 void CFingerDlg::OnBnClickedBtnStep12b2()
 {
 	if (flag1 == 0)
@@ -2792,10 +2796,11 @@ void CFingerDlg::OnBnClickedBtnStep12b2()
 		MessageBox(_T("尚未载入图像！"), _T("提示"));
 		return;
 	}
-	//中值滤波
-	char info[MAX_PATH] = { 0 };
-	m_staticInfo.SetWindowText(ToWideChar(info));
 
+	//初始化操作结果信息
+	char info[MAX_PATH] = { 0 };
+
+	//中值滤波
 	int x2=Step2_MidFilter(info);
 	m_staticInfo.SetWindowText(ToWideChar(info));
 	if (!x2)
