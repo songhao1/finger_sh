@@ -435,6 +435,9 @@ void GetDatabaseInfo(char *info)//获取指纹库统计信息
 }
 
 
+/*本项目使用文本文件保存所有的中间结果数据.每项单步处理功能执行时,都是先从上步操作结果
+数据对应的文本文件中读取位图数据,进行本步处理之后,再将本步的结果数据存入本步对应的
+文本文件,作为后续步骤的输入数据.*/
 //从文本文件读取无符号字符类型的图像位图数据
 //srcFile(源文件),data(无符号字符型数据数组),iWidth(图像宽度),iHeight(图像高度)
 int ReadDataFromTextFile(char *srcFile, unsigned char *data, int iWidth, int iHeight)
@@ -549,7 +552,6 @@ int MidFilter(unsigned char *ucImg, unsigned char *ucDstImg, int iWidth, int iHe
 	}
 
 	//Step3:第1行和最后1行滤波(使用2*3邻域)
-
 	//第1行
 	pDown = ucImg + iWidth;//邻域指针初始化
 	for (int j = 1; j < iWidth - 1; j++)//第1行遍历第2列到倒数第2列
@@ -592,7 +594,6 @@ int MidFilter(unsigned char *ucImg, unsigned char *ucDstImg, int iWidth, int iHe
 	}
 
 	//Step4:4个角点滤波(使用2*2邻域)
-
 	//左上角点
 	x[0] = *(ucImg);//获取2*2邻域数据
 	x[1] = *(ucImg+1);
