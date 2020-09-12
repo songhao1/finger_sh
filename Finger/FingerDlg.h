@@ -10,10 +10,8 @@
 #include<direct.h>//for _mkdir()
 #define TEMP_DIR "temp\\"//临时文件夹，用于存放指纹入库前的所有中间处理结果
 #define TEMP "temp"
-
 #define DB_DIR "Database\\"//指纹库文件夹
 #define DB "Database"//指纹库文件夹
-
 #define DB_INDEX_TXT "Database\\index.txt"//指纹库索引文件
 void InitDatabase();//创建并初始化指纹库
 void InitFile(char *filename);//创建并初始化文件
@@ -45,8 +43,8 @@ protected:
 	afx_msg void OnPaint();
 	afx_msg HCURSOR OnQueryDragIcon();
 	DECLARE_MESSAGE_MAP()
-	DECLARE_EVENTSINK_MAP()
-	afx_msg void OnImageReceivedZkfpengx(BOOL FAR* AImageValid);
+	/*DECLARE_EVENTSINK_MAP()
+	afx_msg void OnImageReceivedZkfpengx(BOOL FAR* AImageValid);*/
 public:
 	CStatic m_staticInfo;
 	CStatic m_picCtrl1;

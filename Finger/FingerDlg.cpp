@@ -91,9 +91,9 @@ BEGIN_MESSAGE_MAP(CFingerDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_BTN_STEP_12B, &CFingerDlg::OnBnClickedBtnStep12b)
 	ON_BN_CLICKED(IDC_BTN_STEP_12B2, &CFingerDlg::OnBnClickedBtnStep12b2)
 END_MESSAGE_MAP()
-BEGIN_EVENTSINK_MAP(CFingerDlg,CDialog)
-	ON_EVENT(CFingerDlg,IDC_ZKFPENGX,8,OnImageReceivedZkfpengx,VTS_PBOOL)
-END_EVENTSINK_MAP()
+//BEGIN_EVENTSINK_MAP(CFingerDlg,CDialog)
+//	ON_EVENT(CFingerDlg,IDC_ZKFPENGX,8,OnImageReceivedZkfpengx,VTS_PBOOL)
+//END_EVENTSINK_MAP()
 
 
 // CFingerDlg 消息处理程序
@@ -151,97 +151,17 @@ HCURSOR CFingerDlg::OnQueryDragIcon()
 }
 
 
-
-void CFingerDlg::OnBnClickedBtnExit()
-{
-	CString strDir(TEMP);
-
-	if (strDir.IsEmpty())
-	{
-		RemoveDirectory(strDir);
-		return;
-	}
-
-	//首先删除文件及子文件夹
-	CFileFind   ff;
-	BOOL bFound = ff.FindFile(strDir + _T("\\*"), 0);
-	while (bFound)
-	{
-		bFound = ff.FindNextFile();
-		if (ff.GetFileName() == _T(".") || ff.GetFileName() == _T(".."))        continue;
-
-		//去掉文件(夹)只读等属性
-		SetFileAttributes(ff.GetFilePath(), FILE_ATTRIBUTE_NORMAL);
-		if (ff.IsDirectory())
-		{
-			//递归删除子文件夹
-			//DeleteDirectory(ff.GetFilePath());
-			RemoveDirectory(ff.GetFilePath());
-		}
-		else
-		{
-			DeleteFile(ff.GetFilePath());   //删除文件
-		}
-
-	}
-
-	ff.Close();
-
-	//然后删除该文件夹
-	RemoveDirectory(strDir);
+//void CFingerDlg::OnImageReceivedZkfpengx(BOOL FAR* AImageValid)
+//{
+//	HDC hdc = this->GetDC()->m_hDC;//获得显示设备上下文环境的句柄
+//	int x = 160;//图像绘制区左上角横坐标
+//	int y = 80;//图像绘制区左上角纵坐标
+//	int width = m_zkfpEng.get_ImageWidth();//图像绘制区宽度
+//	int height = m_zkfpEng.get_ImageHeight();//图像绘制区高度
+//	m_zkfpEng.PrintImageAt(int(hdc), x, y, width, height);//绘制图像
+//}
 
 
-
-	CString strDir2(DB);
-
-	if (strDir2.IsEmpty())
-	{
-		RemoveDirectory(strDir2);
-		return;
-	}
-
-	//首先删除文件及子文件夹
-	CFileFind   ff2;
-	BOOL bFound2 = ff2.FindFile(strDir2 + _T("\\*"), 0);
-	while (bFound2)
-	{
-		bFound2 = ff2.FindNextFile();
-		if (ff2.GetFileName() == _T(".") || ff2.GetFileName() == _T(".."))        continue;
-
-		//去掉文件(夹)只读等属性
-		SetFileAttributes(ff2.GetFilePath(), FILE_ATTRIBUTE_NORMAL);
-		if (ff2.IsDirectory())
-		{
-			//递归删除子文件夹
-			//DeleteDirectory(ff.GetFilePath());
-			RemoveDirectory(ff2.GetFilePath());
-		}
-		else
-		{
-			DeleteFile(ff2.GetFilePath());   //删除文件
-		}
-
-	}
-
-	ff.Close();
-
-	//然后删除该文件夹
-	RemoveDirectory(strDir2);
-
-
-	OnOK();//关闭当前对话框（系统界面）
-}
-
-
-void CFingerDlg::OnImageReceivedZkfpengx(BOOL FAR* AImageValid)
-{
-	HDC hdc = this->GetDC()->m_hDC;//获得显示设备上下文环境的句柄
-	int x = 160;//图像绘制区左上角横坐标
-	int y = 80;//图像绘制区左上角纵坐标
-	int width = m_zkfpEng.get_ImageWidth();//图像绘制区宽度
-	int height = m_zkfpEng.get_ImageHeight();//图像绘制区高度
-	m_zkfpEng.PrintImageAt(int(hdc), x, y, width, height);//绘制图像
-}
 
 
 wchar_t *ToWideChar(char *str)//多字节字符串转换为Unicode宽字符串
@@ -283,6 +203,7 @@ int ShowImageInCtrl(CStatic &picCtrl, char *filename)
 	return 0;
 }
 
+
 int ReadBMPImgFilePara(char *fileName, int &width, int &height, int &depth)
 {
 	//载入图像
@@ -307,7 +228,6 @@ int ReadBMPImgFilePara(char *fileName, int &width, int &height, int &depth)
 	image.Destroy();
 	return 0;
 }
-
 
 int ReadBMPImgFileData(char *fileName, unsigned char *data)
 {
@@ -354,6 +274,7 @@ int ReadBMPImgFileData(char *fileName, unsigned char *data)
 			*pPix2 = gray;
 		}//end for(x)
 	}//end for(y)
+	//在遍历图像像素时,使用的是从图像位图数据区中根据地址偏移量直接读取像素值的方法
 
 	//释放变量空间
 	image.Destroy();
@@ -389,7 +310,6 @@ int SaveDataToTextFile(char *dstFile, unsigned char *data, int width, int height
 
 	return 0;
 }
-
 
 //dstFile(目标文件)，data(浮点型数据数组)，width(图像宽度)，height(图像高度)
 int SaveDataToTextFile(char *dstFile, float *data, int width, int height)
@@ -470,7 +390,7 @@ int Step1_LoadBmpImage(char *info)
 		return -3;
 	}
 
-	//返回图像参数信息
+	//返回图像参数信息//sprintf把字符串的内容赋给info
 	sprintf(info, "源图[%s],宽度[%d],高度[%d],深度[%d b]", filename, iWidth, iHeight, iDepth);
 
 	//释放内存
@@ -505,20 +425,13 @@ void GetDatabaseInfo(char *info)//获取指纹库统计信息
 	FILE *index = fopen(DB_INDEX_TXT, "r");//打开索引文件
 	while (!feof(index))
 	{
+		//fscanf把字符串中的值赋给对应的变量
 		fscanf(index, "%d %s %s %s\n", &pNo, srcFile, mdlFile, name);
 	}
 	fclose(index);//关闭文件
 
-	//统计指纹库信息
+	//统计指纹库信息//sprintf把字符串的内容赋给info
 	sprintf(info, "当前指纹库中共有%d条记录.", pNo);
-}
-
-//指纹库信息
-void CFingerDlg::OnBnClickedBtnDatabase()
-{
-	char info[MAX_PATH] = { 0 };//初始化显示信息
-	GetDatabaseInfo(info);//获取指纹库信息
-	m_staticInfo.SetWindowText(ToWideChar(info));//显示指纹库信息
 }
 
 
@@ -546,7 +459,6 @@ int ReadDataFromTextFile(char *srcFile, unsigned char *data, int iWidth, int iHe
 
 	return 0;
 }
-
 
 //从文本文件读取浮点数类型的其他数据
 //srcFile(源文件),data(浮点型数据数组),iWidth(图像宽度),iHeight(图像高度)
@@ -590,6 +502,8 @@ void Sort(unsigned char *data, int dsize)
 		}
 	}
 }
+
+
 //参数：ucImg(源图数据)，ucDstImg(结果图像数据),iWidth(图像宽度),iHeight(图像高度)
 int MidFilter(unsigned char *ucImg, unsigned char *ucDstImg, int iWidth, int iHeight)
 {
@@ -780,7 +694,6 @@ int SaveDataToImageFile(char *srcFile, char *dstFile, unsigned char *data)
 
 	return 0;
 }
-
 
 //保存数据到图像文件
 //srcFile(源文件名)，dstFile(目标文件名),data(待保存数据数组),scale(转换比例)
@@ -2844,10 +2757,13 @@ int Step12_Identify(char *info)
 	return 0;
 }
 
+
+
+
 int flag1 = 0;
 int flag2 = 0;
 int flag3 = 0;
-//载入图像
+//按钮:载入图像
 void CFingerDlg::OnBnClickedBtnStep1()
 {
 	char info[MAX_PATH] = { 0 };
@@ -2855,6 +2771,15 @@ void CFingerDlg::OnBnClickedBtnStep1()
 	m_staticInfo.SetWindowText(ToWideChar(info));
 	ShowImageInCtrl(m_picCtrl1, STEP_IMG_1);
 	flag1 = 1;
+}
+
+
+//按钮:指纹库信息
+void CFingerDlg::OnBnClickedBtnDatabase()
+{
+	char info[MAX_PATH] = { 0 };//初始化显示信息
+	GetDatabaseInfo(info);//获取指纹库信息
+	m_staticInfo.SetWindowText(ToWideChar(info));//显示指纹库信息
 }
 
 
@@ -2987,3 +2912,84 @@ void CFingerDlg::OnBnClickedBtnStep12b()
 	ShowImageInCtrl(m_picCtrl12, STEP_IMG_12);
 }
 
+
+//退出并且删除temp目录和Database目录
+void CFingerDlg::OnBnClickedBtnExit()
+{
+	CString strDir(TEMP);
+
+	if (strDir.IsEmpty())
+	{
+		RemoveDirectory(strDir);
+		return;
+	}
+
+	//首先删除文件及子文件夹
+	CFileFind   ff;
+	BOOL bFound = ff.FindFile(strDir + _T("\\*"), 0);
+	while (bFound)
+	{
+		bFound = ff.FindNextFile();
+		if (ff.GetFileName() == _T(".") || ff.GetFileName() == _T(".."))        continue;
+
+		//去掉文件(夹)只读等属性
+		SetFileAttributes(ff.GetFilePath(), FILE_ATTRIBUTE_NORMAL);
+		if (ff.IsDirectory())
+		{
+			//递归删除子文件夹
+			//DeleteDirectory(ff.GetFilePath());
+			RemoveDirectory(ff.GetFilePath());
+		}
+		else
+		{
+			DeleteFile(ff.GetFilePath());   //删除文件
+		}
+
+	}
+
+	ff.Close();
+
+	//然后删除该文件夹
+	RemoveDirectory(strDir);
+
+
+
+	CString strDir2(DB);
+
+	if (strDir2.IsEmpty())
+	{
+		RemoveDirectory(strDir2);
+		return;
+	}
+
+	//首先删除文件及子文件夹
+	CFileFind   ff2;
+	BOOL bFound2 = ff2.FindFile(strDir2 + _T("\\*"), 0);
+	while (bFound2)
+	{
+		bFound2 = ff2.FindNextFile();
+		if (ff2.GetFileName() == _T(".") || ff2.GetFileName() == _T(".."))        continue;
+
+		//去掉文件(夹)只读等属性
+		SetFileAttributes(ff2.GetFilePath(), FILE_ATTRIBUTE_NORMAL);
+		if (ff2.IsDirectory())
+		{
+			//递归删除子文件夹
+			//DeleteDirectory(ff.GetFilePath());
+			RemoveDirectory(ff2.GetFilePath());
+		}
+		else
+		{
+			DeleteFile(ff2.GetFilePath());   //删除文件
+		}
+
+	}
+
+	ff.Close();
+
+	//然后删除该文件夹
+	RemoveDirectory(strDir2);
+
+
+	OnOK();//关闭当前对话框（系统界面）
+}
